@@ -23,6 +23,8 @@ public class CategoriaResource {
 		lista.add(cat1);
 		lista.add(cat2);
 		
+		System.out.println("fim do programa");
+		
 		return lista;
 	}
 }
