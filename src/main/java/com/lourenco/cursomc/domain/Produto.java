@@ -15,6 +15,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Produto {
@@ -27,17 +28,19 @@ public class Produto {
 	private Double preco;
 
 	@ManyToMany
-	@JoinTable(name = "PRODUTO_CATEGORIA", 
-		joinColumns = @JoinColumn(name = "produto_id"), 
-		inverseJoinColumns = @JoinColumn(name = "categoria_id")
-	)
-	// diz: do outro lado da associação já foram buscados os objetos. Evita buscas cíclicas.
+	@JoinTable(name = "PRODUTO_CATEGORIA", joinColumns = @JoinColumn(name = "produto_id"), inverseJoinColumns = @JoinColumn(name = "categoria_id"))
+	// diz: do outro lado da associação já foram buscados os objetos. Evita buscas
+	// cíclicas.
 	@JsonBackReference
 	private List<Categoria> categorias = new ArrayList<>();
 
+	/**
+	 * @JsonIgnore - Um produto não precisa saber em quais pedidos ele está
+	 */
+	@JsonIgnore
 	@OneToMany(mappedBy = "id.produto")
 	private Set<ItemPedido> itens = new HashSet<>();
-	
+
 	public Produto() {
 	}
 
@@ -47,7 +50,13 @@ public class Produto {
 		this.nome = nome;
 		this.preco = preco;
 	}
-	
+
+	/**
+	 * Tudo que começa com "get" é automaticamente serializado. Como não queremos
+	 * que a lista de pedidos seja serializada, usamos a anotação @JsonIgnore
+	 * 
+	 */
+	@JsonIgnore
 	public List<Pedido> getPedidos() {
 		List<Pedido> lista = new ArrayList<>();
 		for (ItemPedido x : itens) {
@@ -87,7 +96,7 @@ public class Produto {
 	public void setCategorias(List<Categoria> categorias) {
 		this.categorias = categorias;
 	}
-	
+
 	public Set<ItemPedido> getItens() {
 		return itens;
 	}
