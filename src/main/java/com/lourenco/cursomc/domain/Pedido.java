@@ -30,14 +30,14 @@ public class Pedido implements Serializable {
 	@JsonFormat(pattern = "dd/MM/yyyy HH:mm")
 	private Date instante;
 
+	//@JsonManagedReference
 	// segundo Nelio, o CascadeType.ALL é necessário para evitar erro de Entidade
 	// Transiente no momento do salvamento do Pedido e seu Pagamento
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "pedido")
-	@JsonManagedReference
 	private Pagamento pagamento;
 
 	// o cliente de um pedido poderá ser serializado
-	@JsonManagedReference
+	// @JsonManagedReference
 	@ManyToOne
 	@JoinColumn(name = "cliente_id")
 	private Cliente cliente;
