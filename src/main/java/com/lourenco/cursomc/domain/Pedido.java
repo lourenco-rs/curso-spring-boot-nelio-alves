@@ -30,7 +30,7 @@ public class Pedido implements Serializable {
 	@JsonFormat(pattern = "dd/MM/yyyy HH:mm")
 	private Date instante;
 
-	//@JsonManagedReference
+	// @JsonManagedReference
 	// segundo Nelio, o CascadeType.ALL é necessário para evitar erro de Entidade
 	// Transiente no momento do salvamento do Pedido e seu Pagamento
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "pedido")
@@ -113,6 +113,15 @@ public class Pedido implements Serializable {
 
 	public void setItens(Set<ItemPedido> itens) {
 		this.itens = itens;
+	}
+	
+	public double getValorTotal() {
+		double soma = 0.0;
+		
+		for (ItemPedido ip : itens) {
+			soma += ip.getSubTotal();
+		}
+		return soma;
 	}
 
 	@Override
