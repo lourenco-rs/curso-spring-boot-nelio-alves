@@ -16,11 +16,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 public class Pedido implements Serializable {
-
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -30,14 +28,12 @@ public class Pedido implements Serializable {
 	@JsonFormat(pattern = "dd/MM/yyyy HH:mm")
 	private Date instante;
 
-	// @JsonManagedReference
 	// segundo Nelio, o CascadeType.ALL é necessário para evitar erro de Entidade
 	// Transiente no momento do salvamento do Pedido e seu Pagamento
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "pedido")
 	private Pagamento pagamento;
 
 	// o cliente de um pedido poderá ser serializado
-	// @JsonManagedReference
 	@ManyToOne
 	@JoinColumn(name = "cliente_id")
 	private Cliente cliente;
@@ -50,8 +46,8 @@ public class Pedido implements Serializable {
 	 * id faz referencia a uma classe (subtipo), que por sua vez tem o atribudo
 	 * pedido.
 	 * 
-	 * Não precisa anotar com @JsonManagedReference, pois em ItemPedido há
-	 * um @JsonIgnore
+	 * Não precisa anotar com JsonManagedReference, pois em ItemPedido há
+	 * um JsonIgnore
 	 */
 	@OneToMany(mappedBy = "id.pedido")
 	private Set<ItemPedido> itens = new HashSet<>();
@@ -117,7 +113,6 @@ public class Pedido implements Serializable {
 	
 	public double getValorTotal() {
 		double soma = 0.0;
-		
 		for (ItemPedido ip : itens) {
 			soma += ip.getSubTotal();
 		}

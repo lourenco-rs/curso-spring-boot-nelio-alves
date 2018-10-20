@@ -11,10 +11,18 @@ import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.lourenco.cursomc.domain.enums.EstadoPagamento;
 
+/**
+ * @JsonTypeInfo Basicamente essa anotação diz que a classe Pagamento terá um
+ *               campo adicional com nome @Type Cada subclasse deve especificar
+ *               o valor desse campo.
+ *
+ */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type")
 public abstract class Pagamento implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -92,5 +100,4 @@ public abstract class Pagamento implements Serializable {
 			return false;
 		return true;
 	}
-
 }
