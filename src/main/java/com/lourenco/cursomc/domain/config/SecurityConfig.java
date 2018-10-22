@@ -19,6 +19,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.lourenco.cursomc.security.JWTAuthenticationFilter;
+import com.lourenco.cursomc.security.JWTAuthorizationFilter;
 import com.lourenco.cursomc.security.JWTUtil;
 
 @Configuration
@@ -35,9 +36,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private JWTUtil jwtUtil;
 
-	private static final String[] PUBLIC_MATCHERS = { "/h2-console/**" };
+	private static final String[] PUBLIC_MATCHERS = {
+			"/h2-console/**"
+	};
 
-	private static final String[] PUBLIC_MATCHERS_GET = { "/produtos/**", "/categorias/**", "/clientes/**" };
+	private static final String[] PUBLIC_MATCHERS_GET = {
+			"/produtos/**",
+			"/categorias/**",
+			"/clientes/**"
+	};
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -67,6 +74,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.authenticated();
 		
 		http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
+		http.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtUtil, userDetailsService));
 
 		// Assegura que o backend não criará seção de usuário
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
