@@ -2,9 +2,13 @@ package com.lourenco.cursomc.domain.enums;
 
 public enum Perfil {
 
+	/**
+	 * Por exigência do Spring Secutiry a descrição dos perfis precisa ter o prefixo
+	 * "ROLE_"
+	 */
 	ADMIN(1, "ROLE_ADMIN"),
 	CLIENTE(2, "ROLE_CLIENTE");
-	
+
 	private int cod;
 	private String descricao;
 
