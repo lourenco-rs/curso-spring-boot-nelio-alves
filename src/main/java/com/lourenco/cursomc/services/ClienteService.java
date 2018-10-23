@@ -15,12 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.lourenco.cursomc.domain.Cidade;
 import com.lourenco.cursomc.domain.Cliente;
 import com.lourenco.cursomc.domain.Endereco;
+import com.lourenco.cursomc.domain.enums.Perfil;
 import com.lourenco.cursomc.domain.enums.TipoCliente;
 import com.lourenco.cursomc.dto.ClienteDTO;
 import com.lourenco.cursomc.dto.ClienteNewDTO;
 import com.lourenco.cursomc.repositories.CidadeRepository;
 import com.lourenco.cursomc.repositories.ClienteRepository;
 import com.lourenco.cursomc.repositories.EnderecoRepository;
+import com.lourenco.cursomc.security.UserSS;
+import com.lourenco.cursomc.services.exceptions.AuthorizationException;
 import com.lourenco.cursomc.services.exceptions.DataIntegrityException;
 import com.lourenco.cursomc.services.exceptions.ObjectNotFoundException;
 
@@ -29,23 +32,34 @@ public class ClienteService {
 
 	@Autowired
 	private ClienteRepository repo;
-	
+
 	@Autowired
 	private CidadeRepository cidadeRepository;
-	
+
 	@Autowired
 	private EnderecoRepository enderecoRepository;
-	
+
 	@Autowired
 	private BCryptPasswordEncoder pe;
 
 	public Cliente find(Integer id) {
+
+		/*
+		 * Requisito apresentado na aula 72: somente um admin ou o próprio cliente pode
+		 * ver seus dados
+		 */
+		UserSS user = UserService.authenticated();
+		if (user == null || !user.hasHole(Perfil.ADMIN) && !id.equals(user.getId())) {
+			throw new AuthorizationException("Acesso negado");
+		}
+
 		Optional<Cliente> obj = repo.findById(id);
-		return obj.orElseThrow(() -> new ObjectNotFoundException(
-				"Objeto não encontrado! Id: " + id + ", Tipo: " + Cliente.class.getName()));
+		return obj
+				.orElseThrow(() -> new ObjectNotFoundException(
+						"Objeto não encontrado! Id: " + id + ", Tipo: " + Cliente.class.getName()));
 	}
 
-	/**
+	/*
 	 * O uso da anotação @Transactional é para garantir que tanto o cliente quanto
 	 * os endereços serão gravados com sucesso.
 	 */
@@ -86,21 +100,23 @@ public class ClienteService {
 	public Cliente fromDTO(ClienteDTO objDto) {
 		return new Cliente(objDto.getId(), objDto.getNome(), objDto.getEmail(), null, null, null);
 	}
-	
+
 	public Cliente fromDTO(ClienteNewDTO objDto) {
-		Cliente cli = new Cliente(null, objDto.getNome(), objDto.getEmail(), objDto.getCpfOuCnpj(), TipoCliente.toEnum(objDto.getTipo()), pe.encode(objDto.getSenha()));
+		Cliente cli = new Cliente(null, objDto.getNome(), objDto.getEmail(), objDto.getCpfOuCnpj(),
+				TipoCliente.toEnum(objDto.getTipo()), pe.encode(objDto.getSenha()));
 		Cidade cid = new Cidade(objDto.getCidadeId(), null, null);
-		Endereco end = new Endereco(null, objDto.getLogradouro(), objDto.getNumero(), objDto.getComplemento(), objDto.getBairro(), objDto.getCep(), cli, cid);
+		Endereco end = new Endereco(null, objDto.getLogradouro(), objDto.getNumero(), objDto.getComplemento(),
+				objDto.getBairro(), objDto.getCep(), cli, cid);
 		cli.getEnderecos().add(end);
 		cli.getTelefones().add(objDto.getTelefone1());
-		
+
 		if (objDto.getTelefone2() != null) {
 			cli.getTelefones().add(objDto.getTelefone2());
 		}
 		if (objDto.getTelefone3() != null) {
 			cli.getTelefones().add(objDto.getTelefone3());
 		}
-		
+
 		return cli;
 	}
 

@@ -42,7 +42,7 @@ public class UserSS implements UserDetails {
 				.collect(Collectors.toList());
 	}
 
-	private Integer getId() {
+	public Integer getId() {
 		return id;
 	}
 
@@ -79,6 +79,15 @@ public class UserSS implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+
+	/**
+	 * Verifica se um usuário tem um determinado perfil
+	 * 
+	 * @param Perfil que deseja-se observar
+	 */
+	public boolean hasHole(Perfil perfil) {
+		return getAuthorities().contains(new SimpleGrantedAuthority(perfil.getDescricao()));
 	}
 
 }
