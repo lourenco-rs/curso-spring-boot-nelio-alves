@@ -43,6 +43,15 @@ public class PedidoService {
 	@Autowired
 	private ClienteService clienteService;
 
+	/*
+	 * para o ambiente de será instanciado um MockEmailService, configurado em
+	 * TestConfig num método anotado com @Bean
+	 * 
+	 * public EmailService emailService() {
+	 */
+	@Autowired
+	private EmailService emailService;
+
 	public Pedido find(Integer id) {
 		Optional<Pedido> obj = repo.findById(id);
 		return obj
@@ -89,7 +98,7 @@ public class PedidoService {
 		}
 		itemPedidoRepository.saveAll(obj.getItens());
 
-		System.out.println(obj);
+		emailService.sendOrderConfirmationEmail(obj);
 
 		return obj;
 	}
