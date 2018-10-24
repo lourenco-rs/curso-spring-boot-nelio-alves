@@ -44,8 +44,9 @@ public class PedidoService {
 	private ClienteService clienteService;
 
 	/*
-	 * para o ambiente de será instanciado um MockEmailService, configurado em
-	 * TestConfig num método anotado com @Bean
+	 * para o ambiente de teste será instanciado um MockEmailService, configurado em
+	 * TestConfig num método anotado com @Bean. Para o ambiente DEV, será
+	 * instanciado um SmtpEmailService.
 	 * 
 	 * public EmailService emailService() {
 	 */
